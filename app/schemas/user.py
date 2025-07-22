@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-class User(BaseModel):
+class User(BaseModel): # serializer
     user_id: int
     username: str
     hashed_password: str
