@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from schemas.user import User
 from api.router import api_router
 
 app = FastAPI()

@@ -1,18 +1,18 @@
-from fastapi import APIRouter, status, HTTPException
-from schemas.user import User
-from db.database import SessionLocal
+from fastapi import APIRouter, status, HTTPException, Depends
+from schemas.user import UserCreate, UserOut
 from typing import List
 from models.user import User as UserModel
-
-db = SessionLocal()
+from sqlalchemy.orm import Session
+from dependencies import get_db
+from datetime import datetime
 
 router = APIRouter(
     tags=["users"],
     responses={404: {"description": "Not found"}}
 )
 
-@router.post("/users", response_model=User, status_code=status.HTTP_201_CREATED)
-def create_user(user: User):
+@router.post("/users", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
     db_user = db.query(UserModel).filter(UserModel.username == user.username).first()
 
@@ -24,9 +24,9 @@ def create_user(user: User):
 
     new_user = UserModel(
         username=user.username,
-        hashed_password=user.hashed_password,
-        created_at=user.created_at,
-        updated_at=user.updated_at
+        hashed_password=user.password,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
     )
 
     db.add(new_user)
@@ -34,18 +34,18 @@ def create_user(user: User):
 
     return new_user
 
-@router.get("/users", response_model=List[User], status_code=200)
-def get_users():
+@router.get("/users", response_model=List[UserOut], status_code=200)
+def get_users(db: Session = Depends(get_db)):
     users = db.query(UserModel).all()
     return users
 
-@router.get("/users/{user_id}", response_model=User, status_code=200)
-def get_user(user_id: int):
+@router.get("/users/{user_id}", response_model=UserOut, status_code=200)
+def get_user(user_id: int, db: Session = Depends(get_db)):
     db_user = db.query(UserModel).filter(UserModel.user_id == user_id).first()
     return db_user
 
-@router.put("/users/{user_id}", response_model=User, status_code=status.HTTP_200_OK)
-def update_user(user_id: int, user: User):
+@router.put("/users/{user_id}", response_model=UserOut, status_code=status.HTTP_200_OK)
+def update_user(user_id: int, user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(UserModel).filter(UserModel.user_id == user_id).first()
 
     if db_user is None:
@@ -55,14 +55,14 @@ def update_user(user_id: int, user: User):
         )
 
     db_user.username = user.username
-    db_user.hashed_password = user.hashed_password
-    db_user.updated_at = user.updated_at
+    db_user.hashed_password = user.password
+    db_user.updated_at = datetime.utcnow()
 
     db.commit()
     return db_user
 
-@router.delete("/users/{user_id}", response_model=User, status_code=status.HTTP_200_OK)
-def delete_user(user_id: int):
+@router.delete("/users/{user_id}", response_model=UserOut, status_code=status.HTTP_200_OK)
+def delete_user(user_id: int, db: Session = Depends(get_db)):
     db_user = db.query(UserModel).filter(UserModel.user_id == user_id).first()
 
     if db_user is None:
