@@ -3,6 +3,7 @@ from schemas.user import UserCreate
 from models.user import User
 from typing import List
 from datetime import datetime
+from core.security import hash_password
 
 def get_all_users(db: Session) -> List[User]:
     return db.query(User).all()
@@ -15,8 +16,8 @@ def get_user_by_username(db: Session, username: str) -> User:
 
 def create_user(db: Session, user: UserCreate) -> User:
     db_user = User(
-        username=user.username,
-        hashed_password=user.password  # TODO: hash the password before saving it
+        username = user.username,
+        hashed_password = hash_password(user.password)
     )
 
     db.add(db_user)
@@ -28,7 +29,7 @@ def create_user(db: Session, user: UserCreate) -> User:
 def update_user(db: Session, db_user: User, user: UserCreate) -> User:
 
     db_user.username = user.username
-    db_user.hashed_password = user.password  # TODO: hash the password before saving it
+    db_user.hashed_password = hash_password(user.password)
     db_user.updated_at = datetime.utcnow()
 
     db.commit()
