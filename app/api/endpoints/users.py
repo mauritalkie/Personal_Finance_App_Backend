@@ -3,12 +3,13 @@ from schemas.user import UserCreate, UserOut
 from typing import List
 from models.user import User as UserModel
 from sqlalchemy.orm import Session
-from dependencies import get_db
+from dependencies import get_db, get_current_user
 from services import user_service
 
 router = APIRouter(
     tags=["users"],
-    responses={404: {"description": "Not found"}}
+    responses={404: {"description": "Not found"}},
+    dependencies=[Depends(get_current_user)]
 )
 
 @router.post("/users", response_model=UserOut, status_code=status.HTTP_201_CREATED)
@@ -62,3 +63,13 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
         )
 
     return user_service.delete_user(db, db_user)
+
+@router.post("/users/me", response_model=UserOut, status_code=status.HTTP_200_OK)
+def get_current_user_info(current_user: UserModel = Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    return current_user
