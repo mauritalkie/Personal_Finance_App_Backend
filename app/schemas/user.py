@@ -6,7 +6,6 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-    pass
 
 class UserOut(UserBase):
     user_id: int
