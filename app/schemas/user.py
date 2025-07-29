@@ -7,7 +7,10 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
-class UserOut(UserBase):
+class UserEdit(UserBase):
+    password: str
+
+class UserResponse(UserBase):
     user_id: int
     created_at: datetime
     updated_at: datetime

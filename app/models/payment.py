@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer, ForeignKey, Numeric, Text, Date
+from sqlalchemy import Column, Integer, ForeignKey, Numeric, Text, Date, DateTime
 from sqlalchemy.orm import relationship
 from datetime import date
 from db.base import Base
+from datetime import datetime
+
 
 class Payment(Base):
     __tablename__ = "payments"
@@ -13,6 +15,8 @@ class Payment(Base):
     housing = Column(Numeric(6, 2), nullable=False)
     personal = Column(Numeric(6, 2), nullable=False)
     concept = Column(Text, nullable=False)
-    payment_date = Column(Date, default=date.today)
+    payment_date = Column(Date, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="payments")

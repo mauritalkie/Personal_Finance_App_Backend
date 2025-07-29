@@ -3,7 +3,7 @@ from pydantic import BaseModel
 class TokenBase(BaseModel):
     refresh_token: str
 
-class Token(TokenBase):
+class TokenResponse(TokenBase):
     access_token: str
     token_type: str
 

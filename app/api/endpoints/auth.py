@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, HTTPException, Depends
-from schemas.user import UserCreate, UserOut
-from schemas.token import Token, TokenBase
+from schemas.user import UserCreate, UserResponse
+from schemas.token import TokenResponse, TokenBase
 from typing import List, Annotated
 from models.user import User as UserModel
 from sqlalchemy.orm import Session
@@ -16,7 +16,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}}
 )
 
-@router.post("/token", response_model=Token, status_code=status.HTTP_200_OK)
+@router.post("/token", response_model=TokenResponse, status_code=status.HTTP_200_OK)
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
 
@@ -44,9 +44,9 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Sessio
         expires_delta=refresh_token_expires
     )
     
-    return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
+    return TokenResponse(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
 
-@router.post("/refresh-token", response_model=Token, status_code=status.HTTP_200_OK)
+@router.post("/refresh-token", response_model=TokenResponse, status_code=status.HTTP_200_OK)
 def refresh_token(refresh_token: TokenBase, db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -81,4 +81,4 @@ def refresh_token(refresh_token: TokenBase, db: Session = Depends(get_db)):
         expires_delta=refresh_token_expires
     )
 
-    return Token(access_token=new_access_token, refresh_token=new_refresh_token, token_type="bearer")
+    return TokenResponse(access_token=new_access_token, refresh_token=new_refresh_token, token_type="bearer")
