@@ -30,7 +30,7 @@ def get_users(db: Session = Depends(get_db)):
 
 @router.get("/users/{user_id}", response_model=UserResponse, status_code=200)
 def get_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = db.query(UserModel).filter(UserModel.user_id == user_id).first()
+    db_user = user_service.get_user_by_id(db, user_id)
 
     if db_user is None:
         raise HTTPException(

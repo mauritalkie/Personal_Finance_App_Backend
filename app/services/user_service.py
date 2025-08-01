@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from schemas.user import UserCreate
+from schemas.user import UserCreate, UserEdit
 from models.user import User
 from typing import List
 from datetime import datetime
@@ -26,7 +26,7 @@ def create_user(db: Session, user: UserCreate) -> User:
 
     return db_user
 
-def update_user(db: Session, db_user: User, user: UserCreate) -> User:
+def update_user(db: Session, db_user: User, user: UserEdit) -> User:
 
     db_user.username = user.username
     db_user.hashed_password = hash_password(user.password)
