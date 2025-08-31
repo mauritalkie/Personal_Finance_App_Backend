@@ -10,8 +10,8 @@ class Payment(Base):
 
     payment_id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
-    amount = Column(Numeric(6, 2), nullable=False)
-    saving = Column(Numeric(6, 2), nullable=False)
+    amount = Column(Numeric(7, 2), nullable=False)
+    saving = Column(Numeric(7, 2), nullable=False)
     housing = Column(Numeric(6, 2), nullable=False)
     personal = Column(Numeric(6, 2), nullable=False)
     concept = Column(Text, nullable=False)

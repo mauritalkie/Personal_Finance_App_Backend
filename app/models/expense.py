@@ -10,7 +10,7 @@ class Expense(Base):
     user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
     expense_type_id = Column(Integer, ForeignKey("expenses_types.expense_type_id", ondelete="CASCADE"), nullable=False)
     concept = Column(Text, nullable=False)
-    amount = Column(Numeric(6, 2), nullable=False)
+    amount = Column(Numeric(7, 2), nullable=False)
     expense_date = Column(Date, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow)
