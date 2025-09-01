@@ -1,17 +1,77 @@
 from sqlalchemy.orm import Session
-from schemas.expense import ExpenseCreate, ExpenseEdit
+from schemas.expense import ExpenseCreate, ExpenseEdit, ExpenseResponse
 from models.expense import Expense
 from typing import List
 from datetime import datetime
+from sqlalchemy import desc
+from models.expense_type import ExpenseType
 
 def get_all_expenses(db: Session) -> List[Expense]:
-    return db.query(Expense).all()
+    expenses = (
+        db.query(Expense, ExpenseType)
+        .join(ExpenseType, Expense.expense_type_id == ExpenseType.expense_type_id)
+        .order_by(desc(Expense.expense_id))
+        .all()
+    )
+
+    return [
+        ExpenseResponse (
+            expense_id=expense.Expense.expense_id,
+            user_id=expense.Expense.user_id,
+            expense_type_id=expense.Expense.expense_type_id,
+            concept=expense.Expense.concept,
+            amount=expense.Expense.amount,
+            expense_date=expense.Expense.expense_date,
+            created_at=expense.Expense.created_at,
+            updated_at=expense.Expense.updated_at,
+            expense_type=expense.ExpenseType.expense_type
+        )
+        for expense in expenses
+    ]
 
 def get_expense_by_id(db: Session, expense_id: int) -> Expense:
-    return db.query(Expense).filter(Expense.expense_id == expense_id).first()
+    expense = (
+        db.query(Expense, ExpenseType)
+        .join(ExpenseType, Expense.expense_type_id == ExpenseType.expense_type_id)
+        .filter(Expense.expense_id == expense_id)
+        .first()
+    )
+
+    return ExpenseResponse (
+        expense_id=expense.Expense.expense_id,
+        user_id=expense.Expense.user_id,
+        expense_type_id=expense.Expense.expense_type_id,
+        concept=expense.Expense.concept,
+        amount=expense.Expense.amount,
+        expense_date=expense.Expense.expense_date,
+        created_at=expense.Expense.created_at,
+        updated_at=expense.Expense.updated_at,
+        expense_type=expense.ExpenseType.expense_type
+    )
 
 def get_expenses_by_user_id(db: Session, user_id: int) -> List[Expense]:
-    return db.query(Expense).filter(Expense.user_id == user_id).all()
+    expenses = (
+        db.query(Expense, ExpenseType)
+        .join(ExpenseType, Expense.expense_type_id == ExpenseType.expense_type_id)
+        .filter(Expense.user_id == user_id)
+        .order_by(desc(Expense.expense_id))
+        .all()
+    )
+
+    return [
+        ExpenseResponse (
+            expense_id=expense.Expense.expense_id,
+            user_id=expense.Expense.user_id,
+            expense_type_id=expense.Expense.expense_type_id,
+            concept=expense.Expense.concept,
+            amount=expense.Expense.amount,
+            expense_date=expense.Expense.expense_date,
+            created_at=expense.Expense.created_at,
+            updated_at=expense.Expense.updated_at,
+            expense_type=expense.ExpenseType.expense_type
+        )
+        for expense in expenses
+    ]
 
 def create_expense(db: Session, expense: ExpenseCreate) -> Expense:
     db_expense = Expense(

@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 @router.post("/payments", response_model=PaymentResponse, status_code=status.HTTP_201_CREATED)
-def create_expense_type(payment: PaymentCreate, db: Session = Depends(get_db)):
+def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
     return payment_service.create_payment(db, payment)
 
 @router.get("/payments", response_model=List[PaymentResponse], status_code=200)

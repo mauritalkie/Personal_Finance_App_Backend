@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime, date
 from decimal import Decimal
+from schemas.expense_type import ExpenseTypeResponse
 
 class ExpenseBase(BaseModel):
     expense_type_id: int
@@ -19,6 +20,7 @@ class ExpenseResponse(ExpenseBase):
     user_id: int
     created_at: datetime
     updated_at: datetime
+    expense_type: str
 
     class Config:
         orm_mode=True

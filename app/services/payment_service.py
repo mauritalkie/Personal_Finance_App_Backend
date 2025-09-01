@@ -3,15 +3,16 @@ from schemas.payment import PaymentCreate, PaymentEdit
 from models.payment import Payment
 from typing import List
 from datetime import datetime
+from sqlalchemy import desc
 
 def get_all_payments(db: Session) -> List[Payment]:
-    return db.query(Payment).all()
+    return db.query(Payment).order_by(desc(Payment.payment_id)).all()
 
 def get_payment_by_id(db: Session, payment_id: int) -> Payment:
     return db.query(Payment).filter(Payment.payment_id == payment_id).first()
 
 def get_payments_by_user_id(db: Session, user_id: int) -> List[Payment]:
-    return db.query(Payment).filter(Payment.user_id == user_id).all()
+    return db.query(Payment).filter(Payment.user_id == user_id).order_by(desc(Payment.payment_id)).all()
 
 def create_payment(db: Session, payment: PaymentCreate) -> Payment:
     db_payment = Payment(
