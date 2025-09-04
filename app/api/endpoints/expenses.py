@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, HTTPException, Depends, Query
-from schemas.expense import ExpenseCreate, ExpenseResponse, ExpenseEdit
+from schemas.expense import ExpenseCreate, ExpenseResponse, ExpenseEdit, ExpenseDetailResponse
 from typing import List, Optional
 from models.expense import Expense as ExpenseModel
 from sqlalchemy.orm import Session
@@ -16,13 +16,13 @@ router = APIRouter(
 def create_expense(expense: ExpenseCreate, db: Session = Depends(get_db)):
     return expense_service.create_expense(db, expense)
 
-@router.get("/expenses", response_model=List[ExpenseResponse], status_code=200)
+@router.get("/expenses", response_model=List[ExpenseDetailResponse], status_code=200)
 def get_expenses(user_id: Optional[int] = Query(None) ,db: Session = Depends(get_db)):
     if user_id is not None:
         return expense_service.get_expenses_by_user_id(db, user_id)
     return expense_service.get_all_expenses(db)
 
-@router.get("/expenses/{expense_id}", response_model=ExpenseResponse, status_code=200)
+@router.get("/expenses/{expense_id}", response_model=ExpenseDetailResponse, status_code=200)
 def get_expense(expense_id: int, db: Session = Depends(get_db)):
     db_expense = expense_service.get_expense_by_id(db, expense_id)
 
@@ -36,7 +36,7 @@ def get_expense(expense_id: int, db: Session = Depends(get_db)):
 
 @router.put("/expenses/{expense_id}", response_model=ExpenseResponse, status_code=status.HTTP_200_OK)
 def update_expense_type(expense_id: int, expense_type: ExpenseEdit, db: Session = Depends(get_db)):
-    db_expense = expense_service.get_expense_by_id(db, expense_id)
+    db_expense = expense_service.get_expense_model_by_id(db, expense_id)
 
     if db_expense is None:
         raise HTTPException(
@@ -48,7 +48,7 @@ def update_expense_type(expense_id: int, expense_type: ExpenseEdit, db: Session 
 
 @router.delete("/expenses/{expense_id}", response_model=ExpenseResponse, status_code=status.HTTP_200_OK)
 def delete_expense(expense_id: int, db: Session = Depends(get_db)):
-    db_expense = expense_service.get_expense_by_id(db, expense_id)
+    db_expense = expense_service.get_expense_model_by_id(db, expense_id)
 
     if db_expense is None:
         raise HTTPException(

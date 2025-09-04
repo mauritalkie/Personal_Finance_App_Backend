@@ -20,7 +20,9 @@ class ExpenseResponse(ExpenseBase):
     user_id: int
     created_at: datetime
     updated_at: datetime
-    expense_type: str
 
     class Config:
         orm_mode=True
+
+class ExpenseDetailResponse(ExpenseResponse):
+    expense_type: str
