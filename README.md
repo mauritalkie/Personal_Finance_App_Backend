@@ -1,66 +1,98 @@
-Local Development Setup
+# FastAPI Project
 
-Follow these steps to run the project locally on a fresh machine:
+Este repositorio contiene una aplicación backend construida con **FastAPI**, utilizando **PostgreSQL** como base de datos y **Alembic** para manejo de migraciones. A continuación encontrarás una guía completa para instalar, configurar y ejecutar el proyecto en tu entorno local.
 
-1. Install Dependencies
+---
 
-Install PostgreSQL
+## 🚀 Requisitos Previos
+Asegúrate de tener instalado lo siguiente en tu máquina:
 
-Install Python
+- **Python 3.10+**
+- **PostgreSQL**
+- **Git**
+- (Opcional) **Rust** – requerido solo si no deseas modificar versiones de ciertos paquetes
 
-2. Database Setup
+---
 
-Create a PostgreSQL database with any name.
-The important part is to match the name in your connection string inside the .env file.
+## 📦 Instalación y Configuración
 
-3. Clone the Repository
+### 1️⃣ Clonar el repositorio
+```bash
 git clone https://github.com/mauritalkie/Personal_Finance_App_Backend.git
 cd Personal_Finance_App_Backend
+```
 
-4. Create and Activate a Virtual Environment
+### 2️⃣ Crear base de datos en PostgreSQL
+Crea una base de datos con el nombre que prefieras.
+
+Este nombre deberá coincidir con tu **connection string** dentro del archivo `.env`.
+
+---
+
+### 3️⃣ Crear y activar un entorno virtual
+```bash
 python -m venv venv
-venv\Scripts\activate     # Windows
 
-5. Install Python Requirements
+# Windows
+venv\Scripts\activate
+
+# (Opcional) Linux/MacOS\ source venv/bin/activate
+```
+
+---
+
+### 4️⃣ Instalar dependencias
+```bash
 pip install -r requirements.txt
+```
 
-Possible installation issues
+#### ⚠️ Nota importante
+Durante la instalación podrían ocurrir errores debido al compilado de algunos wheels.
 
-Some packages may fail to build wheels.
+Para solucionarlo puedes optar por:
+- **Opción A:** Instalar Rust para permitir la recompilación de paquetes.
+- **Opción B:** Eliminar manualmente las versiones especificadas de los paquetes conflictivos en `requirements.txt` para instalar las versiones más recientes que ya incluyen wheel precompilado.
 
-You can fix this in two ways:
+---
 
-Install Rust, which allows those packages to compile from source.
+### 5️⃣ Configurar variables de entorno
+Crea un archivo `.env` basado en `.env.example` que se incluirá en el proyecto.
 
-Remove pinned versions in requirements.txt, allowing pip to install the latest wheels that don’t require compilation.
+Solo es necesario sustituir tus credenciales.
 
-6. Environment Variables
-
-Create a .env file based on .env.example and fill your credentials.
-
-To generate a SECRET_KEY, you can run:
-
+#### Generar `secret_key`
+```bash
 openssl rand -hex 32
+```
+Si no funciona en CMD, puedes usar Git Bash.
 
+---
 
-If this command doesn’t work in Windows CMD, try using Git Bash.
-
-7. Apply Database Migrations
+### 6️⃣ Ejecutar migraciones con Alembic
+```bash
 alembic upgrade head
+```
+Esto aplicará todas las migraciones y dejará la base de datos lista.
 
-8. Run the Development Server
+---
 
-Navigate to the app directory:
-
+### 7️⃣ Ejecutar el servidor de desarrollo
+Cambia al directorio `app/`:
+```bash
 cd app
+```
+
+Ejecuta FastAPI en modo desarrollo:
+```bash
 fastapi dev main.py
+```
 
+---
 
-The server will start at:
+## 🌐 Probar la API
+Una vez iniciado, el servidor estará disponible en:
+- http://127.0.0.1:8000
 
-http://127.0.0.1:8000
+Para explorar los endpoints con Swagger UI visita:
+- http://127.0.0.1:8000/docs
 
-
-For interactive API documentation (Swagger UI):
-
-http://127.0.0.1:8000/docs
