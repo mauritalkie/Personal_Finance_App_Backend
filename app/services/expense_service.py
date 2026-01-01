@@ -79,6 +79,36 @@ def get_expenses_by_user_id(db: Session, user_id: int) -> List[ExpenseDetailResp
         for expense in expenses
     ]
 
+def get_expenses_by_filters(db: Session, user_id: int, start_date: datetime = None, end_date: datetime = None) -> List[ExpenseDetailResponse]:
+    query = (
+        db.query(Expense, ExpenseType)
+        .join(ExpenseType, Expense.expense_type_id == ExpenseType.expense_type_id)
+        .filter(Expense.user_id == user_id)
+    )
+    
+    if start_date is not None:
+        query = query.filter(Expense.expense_date >= start_date)
+    
+    if end_date is not None:
+        query = query.filter(Expense.expense_date <= end_date)
+    
+    expenses = query.order_by(desc(Expense.expense_id)).all()
+
+    return [
+        ExpenseDetailResponse (
+            expense_id=expense.Expense.expense_id,
+            user_id=expense.Expense.user_id,
+            expense_type_id=expense.Expense.expense_type_id,
+            concept=expense.Expense.concept,
+            amount=expense.Expense.amount,
+            expense_date=expense.Expense.expense_date,
+            created_at=expense.Expense.created_at,
+            updated_at=expense.Expense.updated_at,
+            expense_type=expense.ExpenseType.expense_type
+        )
+        for expense in expenses
+    ]
+
 def create_expense(db: Session, expense: ExpenseCreate) -> Expense:
     db_expense = Expense(
         user_id = expense.user_id,

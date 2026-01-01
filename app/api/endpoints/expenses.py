@@ -1,3 +1,4 @@
+from datetime import date
 from fastapi import APIRouter, status, HTTPException, Depends, Query
 from schemas.expense import ExpenseCreate, ExpenseResponse, ExpenseEdit, ExpenseDetailResponse
 from typing import List, Optional
@@ -17,10 +18,8 @@ def create_expense(expense: ExpenseCreate, db: Session = Depends(get_db)):
     return expense_service.create_expense(db, expense)
 
 @router.get("/expenses", response_model=List[ExpenseDetailResponse], status_code=200)
-def get_expenses(user_id: Optional[int] = Query(None) ,db: Session = Depends(get_db)):
-    if user_id is not None:
-        return expense_service.get_expenses_by_user_id(db, user_id)
-    return expense_service.get_all_expenses(db)
+def get_expenses(user_id: int = Query(...), start_date: Optional[date] = Query(None), end_date: Optional[date] = Query(None), db: Session = Depends(get_db)):
+    return expense_service.get_expenses_by_filters(db, user_id, start_date, end_date)
 
 @router.get("/expenses/{expense_id}", response_model=ExpenseDetailResponse, status_code=200)
 def get_expense(expense_id: int, db: Session = Depends(get_db)):

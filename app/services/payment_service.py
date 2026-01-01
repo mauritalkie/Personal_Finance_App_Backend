@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from schemas.payment import PaymentCreate, PaymentEdit
 from models.payment import Payment
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from sqlalchemy import desc
 
@@ -13,6 +13,17 @@ def get_payment_by_id(db: Session, payment_id: int) -> Payment:
 
 def get_payments_by_user_id(db: Session, user_id: int) -> List[Payment]:
     return db.query(Payment).filter(Payment.user_id == user_id).order_by(desc(Payment.payment_id)).all()
+
+def get_payments_by_filters(db: Session, user_id: int, start_date: Optional[datetime], end_date: Optional[datetime]) -> List[Payment]:
+    query = db.query(Payment).filter(Payment.user_id == user_id)
+
+    if start_date is not None:
+        query = query.filter(Payment.payment_date >= start_date)
+    
+    if end_date is not None:
+        query = query.filter(Payment.payment_date <= end_date)
+    
+    return query.order_by(desc(Payment.payment_id)).all()
 
 def create_payment(db: Session, payment: PaymentCreate) -> Payment:
     db_payment = Payment(

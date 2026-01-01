@@ -1,3 +1,4 @@
+from datetime import date
 from fastapi import APIRouter, status, HTTPException, Depends, Query
 from schemas.payment import PaymentCreate, PaymentResponse, PaymentEdit
 from typing import List, Optional
@@ -17,10 +18,8 @@ def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
     return payment_service.create_payment(db, payment)
 
 @router.get("/payments", response_model=List[PaymentResponse], status_code=200)
-def get_payments(user_id: Optional[int] = Query(None) ,db: Session = Depends(get_db)):
-    if user_id is not None:
-        return payment_service.get_payments_by_user_id(db, user_id)
-    return payment_service.get_all_payments(db)
+def get_payments(user_id: int = Query(...), start_date: Optional[date] = Query(None), end_date: Optional[date] = Query(None), db: Session = Depends(get_db)):
+    return payment_service.get_payments_by_filters(db, user_id, start_date, end_date)
 
 @router.get("/payments/{payment_id}", response_model=PaymentResponse, status_code=200)
 def get_payment(payment_id: int, db: Session = Depends(get_db)):
